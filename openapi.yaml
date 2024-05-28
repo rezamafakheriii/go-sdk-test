@@ -1,0 +1,170 @@
+consumes:
+- application/json
+info:
+  description: HTTP server that handle connectors.
+  title: connectors-api
+  version: 0.1.0
+produces:
+- application/json
+host: localhost:8080
+schemes:
+- http
+swagger: "2.0"
+tags:
+  - name: connectors
+    description: Handle connectors
+
+paths:
+  /healthz:
+    get:
+      description: Check Health
+      tags:
+        - connectors
+      operationId: checkHealth
+      produces:
+      - text/plain
+      responses:
+        '200':
+          description: OK message.
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+          schema:
+            type: string
+            enum:
+            - OK
+  /connectors:
+    get:
+      description: List Connectors
+      tags:
+        - connectors
+      produces:
+       - application/json
+      responses:
+        200:
+          description: Return the Connectors list.
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Connector'
+
+
+  /connector:
+    post:
+      summary: Add a new Connector
+      tags:
+        - gophers
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: connector
+          description: The Connector to create.
+          schema:
+            type: object
+            required:
+              - name
+              - displayname
+              - url
+            properties:
+              name:
+                type: string
+              displayname:
+                type: string
+              url:
+                type: string
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+            $ref: '#/definitions/Connector'
+        409:
+          description: Connector already exists
+    get:
+      description: Get a connector by a given name
+      tags:
+        - gophers
+      produces:
+       - application/json
+      parameters:
+        - name: name
+          in: query
+          type: string
+          required: true
+          description: Connector name
+      responses:
+        200:
+          description: A connector
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+          schema:
+            type: object
+            $ref: '#/definitions/Connector'
+        404:
+          description: A connector with the specified Name was not found.
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+    delete:
+      description: Delete a connector by a given name
+      tags:
+        - gophers
+      parameters:
+        - name: name
+          in: query
+          type: string
+          required: true
+          description: Connector name
+      responses:
+        200:
+          description: OK
+        404:
+          description: A connector with the specified Name was not found.
+    put:
+      description: Update a connector
+      tags:
+        - gophers
+      parameters:
+        - in: body
+          name: connector
+          description: The Connector to update.
+          schema:
+            type: object
+            required:
+              - name
+              - displayname
+              - url
+            properties:
+              name:
+                type: string
+              displayname:
+                type: string
+              url:
+                type: string
+      responses:
+        200:
+          description: Updated
+          schema:
+            type: object
+            $ref: '#/definitions/Connector'
+        404:
+          description: A connector with the specified Name was not found.
+
+definitions:
+  Connector:
+    type: object
+    properties:
+      name:
+        type: string
+        example: my-connector
+      displayname:
+        type: string
+        example: My Connector
+      url:
+        type: string
+        example: https://raw.githubusercontent.com/scraly/gophers/main/arrow-connector.png

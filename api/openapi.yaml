@@ -1,0 +1,172 @@
+openapi: 3.0.1
+info:
+  description: HTTP server that handle connectors.
+  title: connectors-api
+  version: 0.1.0
+servers:
+- url: http://localhost:8080/
+tags:
+- description: Handle connectors
+  name: connectors
+paths:
+  /healthz:
+    get:
+      description: Check Health
+      operationId: checkHealth
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                enum:
+                - OK
+                type: string
+          description: OK message.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+      tags:
+      - connectors
+  /connectors:
+    get:
+      description: List Connectors
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Connector'
+                type: array
+          description: Return the Connectors list.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+      tags:
+      - connectors
+  /connector:
+    delete:
+      description: Delete a connector by a given name
+      parameters:
+      - description: Connector name
+        in: query
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content: {}
+          description: OK
+        "404":
+          content: {}
+          description: A connector with the specified Name was not found.
+      tags:
+      - gophers
+    get:
+      description: Get a connector by a given name
+      parameters:
+      - description: Connector name
+        in: query
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connector'
+          description: A connector
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+        "404":
+          content: {}
+          description: A connector with the specified Name was not found.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+      tags:
+      - gophers
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_connector_put_request'
+        description: The Connector to create.
+        required: false
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connector'
+          description: Created
+        "409":
+          content: {}
+          description: Connector already exists
+      summary: Add a new Connector
+      tags:
+      - gophers
+      x-codegen-request-body-name: connector
+    put:
+      description: Update a connector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_connector_put_request'
+        description: The Connector to update.
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connector'
+          description: Updated
+        "404":
+          content: {}
+          description: A connector with the specified Name was not found.
+      tags:
+      - gophers
+      x-codegen-request-body-name: connector
+components:
+  schemas:
+    Connector:
+      example:
+        displayname: My Connector
+        name: my-connector
+        url: https://raw.githubusercontent.com/scraly/gophers/main/arrow-connector.png
+      properties:
+        name:
+          example: my-connector
+          type: string
+        displayname:
+          example: My Connector
+          type: string
+        url:
+          example: https://raw.githubusercontent.com/scraly/gophers/main/arrow-connector.png
+          type: string
+      type: object
+    _connector_put_request:
+      properties:
+        name:
+          type: string
+        displayname:
+          type: string
+        url:
+          type: string
+      required:
+      - displayname
+      - name
+      - url
+      type: object
+x-original-swagger-version: "2.0"
